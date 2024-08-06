@@ -50,11 +50,19 @@ export function drawCurveChart(data, ref) {
     .style("border", "1px solid black")
     .style("background", "red");
 
-  const curve = d3.line().curve(d3.curveNatural).x(d => d[0]).y(d => d[1]);
+  const curve = d3
+    .line()
+    .curve(d3.curveNatural)
+    .x((d) => d[0])
+    .y((d) => d[1]);
   svgCanvas
-    .append('path')
-    .attr('d', curve(data))
-    .attr('stroke', 'white')
-    .attr('stroke-width',2)
-    .attr('fill', 'none');
+    .append("path")
+    .attr("d", curve(data))
+    .attr("stroke", "white")
+    .attr("stroke-width", 2)
+    .attr("fill", "none");
+}
+
+export function drawRadarChart(data, ref) {
+
 }
