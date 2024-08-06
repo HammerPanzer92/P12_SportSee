@@ -1,5 +1,6 @@
 import Activity from "./components/Activity";
 import Greetings from "./components/Greetings";
+import KpiGraph from "./components/Kpi";
 import Navbar from "./components/Navbar";
 import RadarChart from "./components/RacharChart";
 import Sessions from "./components/Sessions";
@@ -31,6 +32,7 @@ function App() {
             <Activity/>
             <Sessions/>
             <RadarChart data={data} levels={5} maxValue={5} />
+            <KpiGraph value={12} size={200}/>
           </div>
           <div className="stats_container"></div>
         </div>
