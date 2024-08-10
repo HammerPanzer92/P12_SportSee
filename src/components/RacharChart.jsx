@@ -10,8 +10,10 @@ const RadarChart = ({ data, levels, maxValue }) => {
   }, [data]);
 
   const drawChart = () => {
-    const width = 700;  // Increased width
-    const height = 700; // Increased height
+    svgRef.current.innerHTML = "";
+
+    const width = 258;  // Increased width
+    const height = 263; // Increased height
     const margin = 50;  // Margin to prevent cutoff
     const radius = Math.min(width / 2, height / 2) - margin;
     const svg = d3.select(svgRef.current)
@@ -47,8 +49,17 @@ const RadarChart = ({ data, levels, maxValue }) => {
           .attr('dy', '0.35em')
           .attr("fill", "white")
           .style('font-size', '12px')
-          .style('text-anchor', i === 0 || i === data.length / 2 ? 'middle' : 'start')
-          .text(d.axis);
+/*           .style('text-anchor', i === 0 || i === data.length / 2 ? 'middle' : 'middle') */
+        .style('text-anchor', () => {
+          if(i===0 || i === data.length/2){
+            return "middle";
+          }else if(i > data.length/2){
+            return "end";
+          }else{
+            return "start";
+          }
+        })
+          .text(d => d.axis);
       });
 
     // Draw background hexagons

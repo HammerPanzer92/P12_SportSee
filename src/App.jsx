@@ -10,7 +10,7 @@ import "./SCSS/styles.scss";
 function App() {
 
   const data = [
-    { axis: 'Axis 1', value: 5 },
+    { axis: 'Force', value: 2 },
     { axis: 'Axis 2', value: 4 },
     { axis: 'Axis 3', value: 3 },
     { axis: 'Axis 4', value: 2 },
@@ -32,7 +32,7 @@ function App() {
             <Activity/>
             <Sessions/>
             <RadarChart data={data} levels={5} maxValue={5} />
-            <KpiGraph value={12} size={200}/>
+            <KpiGraph value={25} size={200}/>
           </div>
           <div className="stats_container"></div>
         </div>
