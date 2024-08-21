@@ -1,5 +1,10 @@
 import * as d3 from "d3";
 
+/**
+ * Génére un graphiqque en bar dans l'élément ref
+ * @param {Array<Number>} data Tableau des données du graphique
+ * @param {*} ref L'élément html dans lequel afficher le graphiquer
+ */
 export default function drawBarChart(data, ref) {
   ref.innerHTML = "";
 
@@ -14,14 +19,13 @@ export default function drawBarChart(data, ref) {
   const canvasWidth = 702 + margin.left + margin.right;
 
   const innerHeight = canvasHeight - margin.top - margin.bottom;
-  const innerWidth = canvasWidth - margin.left - margin.right;
 
-  const minKg = Math.min(...data.map((d) => d[0])) - 1;
-  const averageKg = Math.round(averageFunc(data.map((d) => d[0])));
-  const maxKg = Math.max(...data.map((d) => d[0])) + 1;
+  const minKg = Math.min(...data.map((d) => d.kilogram)) - 1;
+  const averageKg = Math.round(averageFunc(data.map((d) => d.kilogram)));
+  const maxKg = Math.max(...data.map((d) => d.kilogram)) + 1;
 
-  const minCal = Math.min(...data.map((d) => d[1])) - 1;
-  const maxCal = Math.max(...data.map((d) => d[1])) + 1;
+  const minCal = Math.min(...data.map((d) => d.calories)) - 1;
+  const maxCal = Math.max(...data.map((d) => d.calories)) + 1;
 
   const yScaleKg = d3.scaleLinear([minKg, maxKg], [innerHeight, 0]);
 
@@ -33,83 +37,67 @@ export default function drawBarChart(data, ref) {
     .attr("width", canvasWidth)
     .attr("height", canvasHeight);
 
-    svgCanvas.append("text")
-    .attr("fill","#20253A")
+  svgCanvas
+    .append("text")
+    .attr("fill", "#20253A")
     .attr("y", 24)
     .attr("x", margin.left)
     .text("Activité quotidienne");
 
-    const circleBlackX = 536;
-    const circleY = 18;
+  const circleBlackX = 536;
+  const circleY = 18;
 
-    svgCanvas.append("circle")
+  svgCanvas
+    .append("circle")
     .attr("r", 4)
     .attr("cx", circleBlackX)
     .attr("cy", circleY)
     .attr("fill", "#282D30");
 
-    svgCanvas.append("text")
+  svgCanvas
+    .append("text")
     .attr("y", 24)
     .attr("x", circleBlackX + 10)
     .text("Poids (kg)")
     .attr("fill", "#74798C");
 
-    svgCanvas.append("circle")
+  svgCanvas
+    .append("circle")
     .attr("r", 4)
     .attr("cx", circleBlackX + 110)
     .attr("cy", circleY)
     .attr("fill", "#E60000");
 
-    svgCanvas.append("text")
+  svgCanvas
+    .append("text")
     .attr("y", 24)
     .attr("x", circleBlackX + 122)
     .text("Calories brûlées (kCal)")
     .attr("fill", "#74798C");
-
-  const lines = [
-    { y: yScaleKg(minKg), label: minKg },
-    { y: yScaleKg(averageKg), label: averageKg },
-    { y: yScaleKg(maxKg), label: maxKg },
-  ];
-
-  lines.forEach((line, index) => {
-    svgCanvas
-      .append("line")
-      .attr("x1", margin.left)
-      .attr("y1", line.y + margin.top)
-      .attr("x2", canvasWidth - margin.right)
-      .attr("y2", line.y + margin.top)
-      .attr("stroke", "gray")
-      .attr("stroke-width", 1)
-      .attr("stroke-dasharray", index === 0 ? "none" : "4");
-
-    svgCanvas
-      .append("text")
-      .attr("x", canvasWidth - margin.right + 10)
-      .attr("y", line.y + 3 + margin.top)
-      .attr("fill", "gray")
-      .attr("font-size", "12px")
-      .text(line.label);
-  });
 
   // Dimensions de la tooltip
   const tooltipWidth = 39;
   const tooltipHeight = 63;
   const tooltipY = margin.top - 50; // Position Y de la tooltip
 
+  const selectBgGroup = svgCanvas.append("g");
+
+  const backgroundGroup = svgCanvas.append("g").attr("class", "background");
+
   data.forEach((pair, index) => {
-    const [kg, cal] = pair;
+    const kg = pair.kilogram;
+    const cal = pair.calories;
     const groupX = margin.left + index * (2 * barWidth + barPadding + 54);
 
     const tooltipX = groupX + 39 + 7; // Position X de la tooltip
 
     // Rect pour la sélection(et affichage du tooltip)
-    svgCanvas
+    selectBgGroup
       .append("rect")
       .attr("x", groupX - 14)
-      .attr("y", margin.top)
+      .attr("y", margin.top - 2)
       .attr("width", 2.5 * barWidth + barPadding + 28)
-      .attr("height", innerHeight)
+      .attr("height", innerHeight + 2)
       .attr("fill", "transparent")
       .on("mouseover", function () {
         d3.select(this).attr("fill", "lightgray");
@@ -174,30 +162,179 @@ export default function drawBarChart(data, ref) {
       .attr("x", groupX + barWidth)
       .attr("y", canvasHeight - 16);
   });
+
+  const lines = [
+    { y: yScaleKg(minKg), label: minKg },
+    { y: innerHeight / 2, label: averageKg },
+    { y: yScaleKg(maxKg), label: maxKg },
+  ];
+
+  lines.forEach((line, index) => {
+    backgroundGroup
+      .append("line")
+      .attr("x1", margin.left)
+      .attr("y1", line.y + margin.top)
+      .attr("x2", canvasWidth - margin.right)
+      .attr("y2", line.y + margin.top)
+      .attr("stroke", "gray")
+      .attr("stroke-width", 1)
+      .attr("stroke-dasharray", index === 0 ? "none" : "4");
+
+    backgroundGroup
+      .append("text")
+      .attr("x", canvasWidth - margin.right + 10)
+      .attr("y", line.y + 3 + margin.top)
+      .attr("fill", "gray")
+      .attr("font-size", "12px")
+      .text(line.label);
+  });
 }
 
 export function drawCurveChart(data, ref) {
   ref.innerHTML = "";
 
-  const canvasHeight = 145;
-  const canvasWidth = 702;
+  const margin = { bottom: 16, left: 14, top: 29, textLeft: 34 };
+  const listDay = ["L", "M", "M", "J", "V", "S", "D"];
+  const canvasHeight = 263;
+  const canvasWidth = 258;
+
+  // Calculate min and max for x and y
+  const xValues = data.map((d) => d[0]);
+  const yValues = data.map((d) => d[1]);
+
+  const xMin = d3.min(xValues);
+  const xMax = d3.max(xValues);
+  const yMax = d3.max(yValues) + 1; // Adding a little margin
+
+  const yScale = d3.scaleLinear(
+    [0, yMax],
+    [canvasHeight - margin.bottom, margin.top]
+  );
+  const xScale = d3.scaleLinear([xMin, xMax], [0, canvasWidth]);
+
   const svgCanvas = d3
     .select(ref)
     .append("svg")
     .attr("width", canvasWidth)
     .attr("height", canvasHeight)
-    .style("border", "1px solid black")
-    .style("background", "red");
+    .attr("class", "barchart")
+    .style("background", "#FF0000");
+
+  // Define the gradient
+  const defs = svgCanvas.append("defs");
+
+  const gradient = defs
+    .append("linearGradient")
+    .attr("id", "gradient")
+    .attr("x1", "100%")
+    .attr("x2", "0%")
+    .attr("y1", "0%")
+    .attr("y2", "0%");
+
+  gradient.append("stop").attr("offset", "1.19%").attr("stop-color", "#FFFFFF");
+
+  gradient
+    .append("stop")
+    .attr("offset", "81.27%")
+    .attr("stop-color", "rgba(255, 255, 255, 0.403191)");
 
   const curve = d3
     .line()
     .curve(d3.curveNatural)
-    .x((d) => d[0])
-    .y((d) => d[1]);
+    .x((d) => xScale(d[0]))
+    .y((d) => yScale(d[1]));
+
+  // Draw the curve with gradient
   svgCanvas
     .append("path")
     .attr("d", curve(data))
-    .attr("stroke", "white")
+    .attr("stroke", "url(#gradient)") // Apply the gradient
     .attr("stroke-width", 2)
     .attr("fill", "none");
+
+  // Add invisible circles for data points
+  svgCanvas
+    .selectAll("circle")
+    .data(data)
+    .enter()
+    .append("circle")
+    .attr("cx", (d) => xScale(d[0]))
+    .attr("cy", (d) => yScale(d[1]))
+    .attr("r", 5) // Radius to ensure the circle is detectable
+    .style("fill", "none")
+    .style("pointer-events", "all")
+    .on("mouseover", function (event, d) {
+      // Show tooltip
+      tooltip
+        .style("visibility", "visible")
+        .style("top", `${event.pageY + 10}px`)
+        .style("left", `${event.pageX + 10}px`)
+        .html(`X: ${d[0]}<br>Y: ${d[1]}`);
+
+      // Optionally, you can change the style of the hovered point
+      d3.select(this)
+        .style("fill", "white")
+        .style("stroke", "black")
+        .style("stroke-width", 1);
+    })
+    .on("mouseout", function () {
+      // Hide tooltip
+      tooltip.style("visibility", "hidden");
+
+      // Reset the style of the point
+      d3.select(this).style("fill", "none").style("stroke", "none");
+    });
+
+  // Create the tooltip element (initially hidden)
+  const tooltip = d3
+    .select(ref)
+    .append("div")
+    .style("position", "absolute")
+    .style("visibility", "hidden")
+    .style("background", "black")
+    .style("color", "white")
+    .style("padding", "5px")
+    .style("border-radius", "5px")
+    .style("font-size", "10px");
+
+  // Add day labels below the graph
+  svgCanvas
+    .selectAll("text.day-label")
+    .data(listDay)
+    .enter()
+    .append("text")
+    .attr("class", "day-label")
+    .attr("x", (d, i) => i * 30 + margin.left)
+    .attr("y", canvasHeight - margin.bottom)
+    .attr("text-anchor", "middle")
+    .attr("fill", "#FFFFFF")
+    .attr("font-size", "12px")
+    .text((d) => d)
+    .attr("opacity", 0.5);
+
+  svgCanvas
+    .append("text")
+    .attr("x", margin.textLeft)
+    .attr("y", 30) // Adjust based on your needs
+    .attr("text-anchor", "start")
+    .attr("fill", "#FFFFFF")
+    .attr("font-size", "14px")
+    .append("tspan")
+    .attr("x", margin.textLeft)
+    .attr("dy", "0") // Position of the first line
+    .text("Durée moyenne des")
+    .attr("opacity", 0.5);
+
+  svgCanvas
+    .append("text")
+    .attr("x", margin.textLeft)
+    .attr("y", 30) // Adjust this value to control vertical position
+    .attr("text-anchor", "start")
+    .attr("fill", "#FFFFFF")
+    .attr("font-size", "14px")
+    .append("tspan")
+    .attr("x", margin.textLeft)
+    .attr("dy", "24px") // Position of the second line
+    .text("sessions")
+    .attr("opacity", 0.5);
 }

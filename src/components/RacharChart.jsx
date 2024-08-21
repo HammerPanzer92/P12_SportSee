@@ -12,6 +12,30 @@ const RadarChart = ({ data, levels, maxValue }) => {
   const drawChart = () => {
     svgRef.current.innerHTML = "";
 
+    const kindList = [
+      "Cardio","Energie","Endurance","Force","Vitesse", "Intensité"
+    ];
+
+    var arrayData = new Array(6);
+
+    if(data === null){
+      arrayData =    { axis: "Intensity", value: 0 },
+      { axis: "Vitesse", value: 0 },
+      { axis: "Force", value: 0 },
+      { axis: "Endurance", value: 0 },
+      { axis: "Energie", value: 0 },
+      { axis: "Cardio", value: 0 };
+    }else{
+      data.data.forEach((element) => {
+        const kind = element.kind
+        const value = element.value
+
+        console.log("Kind:" + kind);
+        console.log("Nom Kind :" + kindList[kind - 1]);
+        arrayData[kind - 1] = {axis : kindList[kind - 1], value: value}
+      })
+    }
+
     const width = 258;  // Increased width
     const height = 263; // Increased height
     const margin = 50;  // Margin to prevent cutoff
@@ -22,11 +46,11 @@ const RadarChart = ({ data, levels, maxValue }) => {
       .append('g')
       .attr('transform', `translate(${width / 2}, ${height / 2})`);
 
-    const angleSlice = (Math.PI * 2) / data.length;
+    const angleSlice = (Math.PI * 2) / arrayData.length;
 
     // Draw axis lines and labels
     svg.selectAll('.axis')
-      .data(data)
+      .data(arrayData)
       .enter()
       .append('g')
       .attr('class', 'axis')
@@ -51,9 +75,9 @@ const RadarChart = ({ data, levels, maxValue }) => {
           .style('font-size', '12px')
 /*           .style('text-anchor', i === 0 || i === data.length / 2 ? 'middle' : 'middle') */
         .style('text-anchor', () => {
-          if(i===0 || i === data.length/2){
+          if(i===0 || i === arrayData.length/2){
             return "middle";
-          }else if(i > data.length/2){
+          }else if(i > arrayData.length/2){
             return "end";
           }else{
             return "start";
@@ -66,7 +90,7 @@ const RadarChart = ({ data, levels, maxValue }) => {
     for (let level = 0; level < levels; level++) {
       const levelFactor = radius * ((level + 1) / levels);
       const points = [];
-      for (let i = 0; i < data.length; i++) {
+      for (let i = 0; i < arrayData.length; i++) {
         points.push([
           levelFactor * Math.cos(angleSlice * i - Math.PI / 2),
           levelFactor * Math.sin(angleSlice * i - Math.PI / 2),
@@ -88,7 +112,7 @@ const RadarChart = ({ data, levels, maxValue }) => {
       .angle((d, i) => i * angleSlice);
 
     svg.append('path')
-      .datum(data)
+      .datum(arrayData)
       .attr('d', radarLine)
       .style('stroke-width', '0px')
       .style('stroke', '#FF0101B2')

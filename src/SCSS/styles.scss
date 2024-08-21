@@ -1,6 +1,7 @@
 @use "navbar";
 @use "sidebar";
 @use "radarchart";
+@use "barchart";
 
 body{
     margin: 0px;
@@ -26,6 +27,11 @@ body{
             color: red;
         }
     }
+}
+
+.graph_div{
+    overflow: hidden;
+    border-radius: 5px;
 }
 
 .objectif{
