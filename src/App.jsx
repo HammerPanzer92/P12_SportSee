@@ -16,15 +16,6 @@ function App() {
   const [sessionsData, setSessionsData] = useState(null);
   const [performanceData, setPerformanceData] = useState(null);
 
-  const data = [
-    { axis: "Force", value: 2 },
-    { axis: "Axis 2", value: 4 },
-    { axis: "Axis 3", value: 3 },
-    { axis: "Axis 4", value: 2 },
-    { axis: "Axis 5", value: 4 },
-    { axis: "Axis 6", value: 3 },
-  ];
-
   test();
 
   getUserById(12)
@@ -58,10 +49,10 @@ function App() {
             <div className="small_graph_container">
               <Sessions data={sessionsData ? sessionsData : null} />
               <div className="graph_div">
-                <RadarChart data={performanceData ? performanceData : null} levels={5} maxValue={200} />
+                <RadarChart data={performanceData ? performanceData : null} levels={5} maxValue={250} />
               </div>
               <div className="graph_div">
-                <KpiGraph value={userData ? userData.todayScore : 0} size={3} />
+                <KpiGraph value={userData ? userData.todayScore * 100 : 0} size={200} />
               </div>
             </div>
           </div>

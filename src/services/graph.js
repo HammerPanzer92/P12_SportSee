@@ -193,24 +193,31 @@ export default function drawBarChart(data, ref) {
 export function drawCurveChart(data, ref) {
   ref.innerHTML = "";
 
-  const margin = { bottom: 16, left: 14, top: 29, textLeft: 34 };
+  const margin = { bottom: 16, left: 14, top: 40, textLeft: 34 };
+
+  // Table containing the days (to display under the curve)
   const listDay = ["L", "M", "M", "J", "V", "S", "D"];
   const canvasHeight = 263;
   const canvasWidth = 258;
 
-  // Calculate min and max for x and y
-  const xValues = data.map((d) => d[0]);
-  const yValues = data.map((d) => d[1]);
+  // Calculate max and min values for the chart scale
+  const xValues = data.map((d) => d.day);
+  const yValues = data.map((d) => d.sessionLength);
 
   const xMin = d3.min(xValues);
   const xMax = d3.max(xValues);
-  const yMax = d3.max(yValues) + 1; // Adding a little margin
+  const yMax = d3.max(yValues) + 1;
 
+  // Adjust the xScale to place the first and last points on the edges
+  const xScale = d3.scaleLinear(
+    [xMin, xMax],
+    [0, canvasWidth]
+  );
+  
   const yScale = d3.scaleLinear(
     [0, yMax],
     [canvasHeight - margin.bottom, margin.top]
   );
-  const xScale = d3.scaleLinear([xMin, xMax], [0, canvasWidth]);
 
   const svgCanvas = d3
     .select(ref)
@@ -220,7 +227,7 @@ export function drawCurveChart(data, ref) {
     .attr("class", "barchart")
     .style("background", "#FF0000");
 
-  // Define the gradient
+  // Create gradient for the curve
   const defs = svgCanvas.append("defs");
 
   const gradient = defs
@@ -241,8 +248,8 @@ export function drawCurveChart(data, ref) {
   const curve = d3
     .line()
     .curve(d3.curveNatural)
-    .x((d) => xScale(d[0]))
-    .y((d) => yScale(d[1]));
+    .x((d) => xScale(d.day))
+    .y((d) => yScale(d.sessionLength));
 
   // Draw the curve with gradient
   svgCanvas
@@ -258,8 +265,8 @@ export function drawCurveChart(data, ref) {
     .data(data)
     .enter()
     .append("circle")
-    .attr("cx", (d) => xScale(d[0]))
-    .attr("cy", (d) => yScale(d[1]))
+    .attr("cx", (d) => xScale(d.day))
+    .attr("cy", (d) => yScale(d.sessionLength))
     .attr("r", 5) // Radius to ensure the circle is detectable
     .style("fill", "none")
     .style("pointer-events", "all")
@@ -269,7 +276,7 @@ export function drawCurveChart(data, ref) {
         .style("visibility", "visible")
         .style("top", `${event.pageY + 10}px`)
         .style("left", `${event.pageX + 10}px`)
-        .html(`X: ${d[0]}<br>Y: ${d[1]}`);
+        .html(`X: ${d.day}<br>Y: ${d.sessionLength}`);
 
       // Optionally, you can change the style of the hovered point
       d3.select(this)
@@ -297,44 +304,39 @@ export function drawCurveChart(data, ref) {
     .style("border-radius", "5px")
     .style("font-size", "10px");
 
-  // Add day labels below the graph
+  // Add day labels below each data point (except the first and last)
   svgCanvas
     .selectAll("text.day-label")
-    .data(listDay)
+    .data(data.slice(1, -1)) // Exclude first and last
     .enter()
     .append("text")
     .attr("class", "day-label")
-    .attr("x", (d, i) => i * 30 + margin.left)
-    .attr("y", canvasHeight - margin.bottom)
+    .attr("x", (d) => xScale(d.day))
+    .attr("y", canvasHeight - margin.bottom + 12) // Adjust for label position
     .attr("text-anchor", "middle")
     .attr("fill", "#FFFFFF")
     .attr("font-size", "12px")
-    .text((d) => d)
+    .text((d, i) => listDay[i + 1]) // Adjust index to match data slicing
     .attr("opacity", 0.5);
 
+  // Add chart title
   svgCanvas
     .append("text")
     .attr("x", margin.textLeft)
-    .attr("y", 30) // Adjust based on your needs
+    .attr("y", 20) // Adjust based on your needs
     .attr("text-anchor", "start")
     .attr("fill", "#FFFFFF")
     .attr("font-size", "14px")
-    .append("tspan")
-    .attr("x", margin.textLeft)
-    .attr("dy", "0") // Position of the first line
     .text("Durée moyenne des")
     .attr("opacity", 0.5);
 
   svgCanvas
     .append("text")
     .attr("x", margin.textLeft)
-    .attr("y", 30) // Adjust this value to control vertical position
+    .attr("y", 40) // Adjust this value to control vertical position
     .attr("text-anchor", "start")
     .attr("fill", "#FFFFFF")
     .attr("font-size", "14px")
-    .append("tspan")
-    .attr("x", margin.textLeft)
-    .attr("dy", "24px") // Position of the second line
     .text("sessions")
     .attr("opacity", 0.5);
 }
