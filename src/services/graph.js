@@ -224,9 +224,17 @@ export function drawCurveChart(data, ref) {
     .append("svg")
     .attr("width", canvasWidth)
     .attr("height", canvasHeight)
-    .attr("class", "barchart")
+    .attr("class", "sessionchart")
     .style("background", "#FF0000");
-
+  
+  const bgRect = svgCanvas.append("rect")
+  .attr("width", canvasWidth)
+  .attr("height", canvasHeight)
+  .style("fill","#000000")
+  .style("opacity", 0.0975)
+  .attr("y",0)
+  .attr("x",canvasWidth);
+  
   // Create gradient for the curve
   const defs = svgCanvas.append("defs");
 
@@ -276,17 +284,21 @@ export function drawCurveChart(data, ref) {
         .style("visibility", "visible")
         .style("top", `${event.pageY + 10}px`)
         .style("left", `${event.pageX + 10}px`)
-        .html(`X: ${d.day}<br>Y: ${d.sessionLength}`);
+        .html(`${d.sessionLength} min`);
 
       // Optionally, you can change the style of the hovered point
       d3.select(this)
         .style("fill", "white")
         .style("stroke", "black")
         .style("stroke-width", 1);
+      
+      bgRect.attr("x", xScale(d.day));
     })
     .on("mouseout", function () {
       // Hide tooltip
       tooltip.style("visibility", "hidden");
+
+      bgRect.attr("x", canvasWidth);
 
       // Reset the style of the point
       d3.select(this).style("fill", "none").style("stroke", "none");
@@ -316,7 +328,7 @@ export function drawCurveChart(data, ref) {
     .attr("text-anchor", "middle")
     .attr("fill", "#FFFFFF")
     .attr("font-size", "12px")
-    .text((d, i) => listDay[i + 1]) // Adjust index to match data slicing
+    .text((d, i) => listDay[i]) // Adjust index to match data slicing
     .attr("opacity", 0.5);
 
   // Add chart title
