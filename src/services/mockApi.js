@@ -1,16 +1,16 @@
 import * as data from "./mockData";
 
-export function test(){
-    console.log("Data :");
-    console.log(data);
-}
-
-export async function getUserById(id) {
+export async function getMockUserById(id) {
   const result = data.USER_MAIN_DATA.filter((user) => user.id === id).shift();
+
+  if (result.todayScore) {
+    result.score = result.todayScore;
+  }
+
   return result;
 }
 
-export async function getUserActivityById(id) {
+export async function getMockUserActivityById(id) {
   const result = data.USER_ACTIVITY.filter(
     (data) => data.userId === id
   ).shift();
@@ -19,7 +19,7 @@ export async function getUserActivityById(id) {
   return result;
 }
 
-export async function getUserAverageSession(id) {
+export async function getMockUserAverageSession(id) {
   const result = data.USER_AVERAGE_SESSIONS.filter(
     (data) => data.userId === id
   ).shift();
@@ -28,7 +28,7 @@ export async function getUserAverageSession(id) {
   return result;
 }
 
-export async function getUserPerformance(id) {
+export async function getMockUserPerformance(id) {
   const result = data.USER_PERFORMANCE.filter(
     (data) => data.userId === id
   ).shift();
