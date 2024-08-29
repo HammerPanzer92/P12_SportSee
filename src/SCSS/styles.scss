@@ -3,38 +3,126 @@
 @use "radarchart";
 @use "barchart";
 
-body{
+body {
     margin: 0px;
 }
 
-*{
+* {
     font-family: "Roboto", sans-serif;
     font-weight: 500;
 }
 
-.container{
+.container {
     display: flex;
 }
 
-.data_container{
+.data_container {
     width: 100%;
     margin: 68px 90px 86px 107px;
 
-    .greetings{
+    .greetings {
         font-size: 48px;
         line-height: 24px;
-        span{
+        span {
             color: red;
+        }
+    }
+
+    .main_stats_container {
+        display: flex;
+
+        .graph_container {
+            display: flex;
+            flex-direction: column;
+            .small_graph_container {
+                display: flex;
+                gap: 30px;
+                .graph_div {
+                    border-radius: 5px;
+                    overflow: hidden;
+                    height: 263px;
+                    width: 258px;
+                }
+            }
+        }
+
+        .stats_container{
+            display: flex;
+            gap: 103px;
+            flex-direction: column;
+            margin-left: 63px;
+        }
+
+        .stat_div {
+            display: flex;           
+            align-items: center;
+            .stat_icon {
+                height: 60px;
+                width: 60px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 10px;
+                margin-right: 24px;
+                img {
+                    height: 20px;
+                    width: auto;
+                }
+            }
+            .stat_info {
+                height: 60px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                .stat_quantity {
+                    font-family: Roboto;
+                    font-size: 20px;
+                    font-weight: 700;
+                    line-height: 24px;
+                    text-align: left;
+                    margin-top: 0;
+                    margin-bottom: 0;
+                }
+                .stat_name {
+                    font-family: Roboto;
+                    color: #74798C;
+                    font-size: 14px;
+                    font-weight: 500;
+                    line-height: 24px;
+                    text-align: left;
+                    margin-bottom: 0;
+                    margin-top: 0;
+                }
+            }
+        }
+
+        .calorieCount{
+            .stat_icon{
+                background-color: #FF00001A;
+            }
+        }
+
+        .proteinCount{
+            .stat_icon{
+                background-color: #4AB8FF1A;
+            }
+        }
+
+        .carbohydrateCount{
+            .stat_icon{
+                background-color: #f9ce231A;
+            }
+        }
+
+        .lipidCount{
+            .stat_icon{
+                background-color: #FD51811A;
+            }
         }
     }
 }
 
-.graph_div{
-    overflow: hidden;
-    border-radius: 5px;
-}
-
-.objectif{
+.objectif {
     font-weight: 400;
     font-size: 18px;
     line-height: 24px;
