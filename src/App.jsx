@@ -74,6 +74,7 @@ function App() {
                   />
                 </div>
                 <div className="graph_div">
+                  <p>Score</p>
                   <KpiGraph
                     value={userData ? userData.score * 100 : 0}
                     size={200}
