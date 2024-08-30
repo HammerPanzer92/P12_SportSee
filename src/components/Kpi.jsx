@@ -42,6 +42,7 @@ const KpiGraph = ({ value, min = 0, max = 100, size = 200 }) => {
     var text = [];
     const lineHeight = "26px";
 
+    //Si on a une valeur, on affiche cette valeur, sinon on affiche "Aucune données" a la place
     if (value >= 0) {
       text = [`${value}%`, "de votre", "objectif"];
     } else {

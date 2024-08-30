@@ -1,9 +1,7 @@
 import { StatElement } from "./StatElement";
 
 export function Stats(props) {
-  console.log("STATS PROPS");
-  console.log(props);
-
+  //Si on a des stats, alors on les affichent via des components StatElement, sinon on affiche juste un message
   if (props.stats) {
     return (
       <div className="stats_container">
