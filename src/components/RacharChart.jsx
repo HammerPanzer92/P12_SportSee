@@ -5,10 +5,11 @@ import * as d3 from "d3";
 const RadarChart = ({ data, levels, maxValue }) => {
   const svgRef = useRef();
 
+  // Utilisation d'un useEffect pour évite que le graphique soit créé plusieurs fois sur la même page
   useEffect(() => {
-    console.log("RADAR DATA");
-    console.log(data);
-    drawChart();
+    if (data) {
+      drawChart();
+    }
   }, [data]);
 
   const drawChart = () => {
@@ -35,15 +36,6 @@ const RadarChart = ({ data, levels, maxValue }) => {
         { axis: "Cardio", value: 0 },
       ];
     } else {
-      /*       data.data.forEach((element) => {
-        const kind = element.kind
-        const value = element.value
-
-        console.log("Kind:" + kind);
-        console.log("Nom Kind :" + kindList[kind - 1]);
-        arrayData[kind - 1] = {axis : kindList[kind - 1], value: value}
-      }) */
-
       const dataList = data.data;
 
       for (let i = dataList.length - 1; i >= 0; i--) {
@@ -55,20 +47,20 @@ const RadarChart = ({ data, levels, maxValue }) => {
       }
     }
 
-    const width = 258; // Increased width
-    const height = 263; // Increased height
-    const margin = 50; // Margin to prevent cutoff
-    const radius = Math.min(width / 2, height / 2) - margin;
+    const width = 258; // Largeur du graph
+    const height = 263; // Hauteur du graph
+    const margin = 50; // Marge du graph
+    const radius = Math.min(width / 2, height / 2) - margin; //Raddius du graph
     const svg = d3
       .select(svgRef.current)
       .attr("width", width)
       .attr("height", height)
       .append("g")
-      .attr("transform", `translate(${width / 2}, ${height / 2})`);
+      .attr("transform", `translate(${width / 2}, ${height / 2})`); //Déplacement du centre de dessins au centre afin de pouvoir dessiner le graphique
 
     const angleSlice = (Math.PI * 2) / arrayData.length;
 
-    // Draw axis lines and labels
+    // Dessins des axes (lignes et labels)
     svg
       .selectAll(".axis")
       .data(arrayData)
@@ -77,7 +69,7 @@ const RadarChart = ({ data, levels, maxValue }) => {
       .attr("class", "axis")
       .each(function (d, i) {
         /* 
-        // Draw the axis line
+        // Les lignes des axes (pas utilisé ici)
         d3.select(this)
           .append('line')
           .attr('x1', 0)
@@ -86,7 +78,7 @@ const RadarChart = ({ data, levels, maxValue }) => {
           .attr('y2', radius * Math.sin(angleSlice * i - Math.PI / 2))
           .style('stroke', 'grey')
           .style('stroke-width', '2px'); */
-        // Add the axis label
+        // Ajout des labels des axes
         d3.select(this)
           .append("text")
           .attr("x", radius * 1.1 * Math.cos(angleSlice * i - Math.PI / 2))
@@ -94,7 +86,7 @@ const RadarChart = ({ data, levels, maxValue }) => {
           .attr("dy", "0.35em")
           .attr("fill", "white")
           .style("font-size", "12px")
-          /*           .style('text-anchor', i === 0 || i === data.length / 2 ? 'middle' : 'middle') */
+          //Moddification du centrage du texte selon leur position sur le graphique
           .style("text-anchor", () => {
             if (i === 0 || i === arrayData.length / 2) {
               return "middle";
@@ -107,7 +99,7 @@ const RadarChart = ({ data, levels, maxValue }) => {
           .text((d) => d.axis);
       });
 
-    // Draw background hexagons
+    // Polygon de fondds
     for (let level = 0; level < levels; level++) {
       const levelFactor = radius * ((level + 1) / levels);
       const points = [];
@@ -127,7 +119,7 @@ const RadarChart = ({ data, levels, maxValue }) => {
         .style("fill-opacity", 0.1);
     }
 
-    // Draw the radar chart
+    // Création du graph en lui-même via une ligne rempli avec un radius défini afin de créé un polygone
     const radarLine = d3
       .lineRadial()
       .radius((d) => radius * (d.value / maxValue))
@@ -144,7 +136,15 @@ const RadarChart = ({ data, levels, maxValue }) => {
       .style("fill-opacity", 0.7);
   };
 
-  return <svg className="svg_radar" ref={svgRef}></svg>;
+  if (data) {
+    return <svg className="svg_radar" ref={svgRef}></svg>;
+  } else {
+    return (
+      <div className="nodata">
+        <p>Aucune données</p>
+      </div>
+    );
+  }
 };
 
 export default RadarChart;

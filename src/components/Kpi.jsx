@@ -12,7 +12,7 @@ const KpiGraph = ({ value, min = 0, max = 100, size = 200 }) => {
       .append("g")
       .attr("transform", `translate(${size / 2}, ${size / 2})`);
 
-    // Add background arc
+    // Arc de fond
     const backgroundArc = d3
       .arc()
       .innerRadius(size / 2 - 20)
@@ -22,20 +22,33 @@ const KpiGraph = ({ value, min = 0, max = 100, size = 200 }) => {
 
     svg.append("path").attr("d", backgroundArc).attr("fill", "#FBFBFB");
 
+    //Création de l'arc selon la valeur (par défaut de 0 a 100)
     const arc = d3
       .arc()
       .innerRadius(size / 2 - 10)
       .outerRadius(size / 2)
       .startAngle(0)
-      .endAngle(-(2 * Math.PI * (value - min)) / (max - min))
+      .endAngle(() => {
+        if (value >= 0) {
+          return -(2 * Math.PI * (value - min)) / (max - min);
+        } else {
+          return -((2 * Math.PI * 0) / (max - min));
+        }
+      })
       .cornerRadius(50);
 
     svg.append("path").attr("d", arc).attr("fill", "#FF0000");
 
-    const text = [`${value}%`, "de votre", "objectif"];    
+    var text = [];
     const lineHeight = "26px";
 
-    // Add the text label in the center
+    if (value >= 0) {
+      text = [`${value}%`, "de votre", "objectif"];
+    } else {
+      text = ["Aucune", "données"];
+    }
+
+    // Ajout du texte au centre
     var textSvg = svg
       .append("text")
       .attr("text-anchor", "middle")
@@ -47,11 +60,11 @@ const KpiGraph = ({ value, min = 0, max = 100, size = 200 }) => {
       textSvg
         .append("tspan")
         .attr("dy", `${index === 0 ? 0 : lineHeight}`)
-        .attr("fill", `${index === 0 ? "black" : "#74798C"}` )
+        .attr("fill", `${index === 0 ? "black" : "#74798C"}`)
         .text(line);
     });
 
-    textSvg.selectAll("tspan").attr("x",0)
+    textSvg.selectAll("tspan").attr("x", 0);
 
     return () => {
       d3.select(ref.current).selectAll("*").remove();

@@ -31,20 +31,22 @@ function App() {
   const [sessionsData, setSessionsData] = useState(null);
   const [performanceData, setPerformanceData] = useState(null);
 
+  //Appelle des fonctions d'API (ou mockAPI)
   useEffect(() => {
-    getUserInfo(12)
+    //Utilisation de useState afin que React met à jour l'affichage dés que les données sont disponible
+    getUserInfo(18)
       .then((data) => setDataUser(data))
       .catch((err) => console.error(err));
 
-    getActivityById(12)
+    getActivityById(18)
       .then((data) => setActivityData(data))
       .catch((err) => console.error(err));
 
-    getAverageById(12)
+    getAverageById(18)
       .then((data) => setSessionsData(data))
       .catch((err) => console.error(err));
 
-    getPerformanceById(12)
+    getPerformanceById(18)
       .then((data) => setPerformanceData(data))
       .catch((err) => console.error(err));
   }, []);
@@ -76,7 +78,7 @@ function App() {
                 <div className="graph_div">
                   <p>Score</p>
                   <KpiGraph
-                    value={userData ? userData.score * 100 : 0}
+                    value={userData ? userData.score * 100 : -1}
                     size={200}
                   />
                 </div>
@@ -86,12 +88,7 @@ function App() {
               stats={
                 userData
                   ? userData.keyData
-                  : {
-                      calorieCount: 0,
-                      proteinCount: 0,
-                      carbohydrateCount: 0,
-                      lipidCount: 0,
-                    }
+                  : null
               }
             />
           </div>

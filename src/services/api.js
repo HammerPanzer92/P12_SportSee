@@ -31,7 +31,7 @@ async function fetchApiJson(url) {
       console.error("There was a problem with the fetch operation:", error);
     });
 
-  if (result.data) {
+  if (result && result.data) {
     return result.data;
   } else {
     return false;
@@ -80,10 +80,6 @@ export async function getActivityById(id) {
       console.error(error);
     });
 
-  if (result.todayScore) {
-    result.score = result.todayScore;
-  }
-
   console.log("FETCH ACTIVITY");
   console.log(result);
 
@@ -106,10 +102,6 @@ export async function getAverageById(id) {
       console.error(error);
     });
 
-  if (result.todayScore) {
-    result.score = result.todayScore;
-  }
-
   console.log("FETCH AVERAGE");
   console.log(result);
 
@@ -131,10 +123,6 @@ export async function getPerformanceById(id) {
     .catch((error) => {
       console.error(error);
     });
-
-  if (result.todayScore) {
-    result.score = result.todayScore;
-  }
 
   console.log("FETCH PERFORMANCE");
   console.log(result);
