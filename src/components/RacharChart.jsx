@@ -1,11 +1,13 @@
 // src/components/RadarChart.js
-import React, { useRef, useEffect } from 'react';
-import * as d3 from 'd3';
+import React, { useRef, useEffect } from "react";
+import * as d3 from "d3";
 
 const RadarChart = ({ data, levels, maxValue }) => {
   const svgRef = useRef();
 
   useEffect(() => {
+    console.log("RADAR DATA");
+    console.log(data);
     drawChart();
   }, [data]);
 
@@ -13,48 +15,68 @@ const RadarChart = ({ data, levels, maxValue }) => {
     svgRef.current.innerHTML = "";
 
     const kindList = [
-      "Cardio","Energie","Endurance","Force","Vitesse", "Intensité"
+      "Cardio",
+      "Energie",
+      "Endurance",
+      "Force",
+      "Vitesse",
+      "Intensité",
     ];
 
-    var arrayData = new Array(6);
+    var arrayData = [];
 
-    if(data === null){
-      arrayData =    { axis: "Intensity", value: 0 },
-      { axis: "Vitesse", value: 0 },
-      { axis: "Force", value: 0 },
-      { axis: "Endurance", value: 0 },
-      { axis: "Energie", value: 0 },
-      { axis: "Cardio", value: 0 };
-    }else{
-      data.data.forEach((element) => {
+    if (data === null) {
+      arrayData = [
+        { axis: "Intensité", value: 0 },
+        { axis: "Vitesse", value: 0 },
+        { axis: "Force", value: 0 },
+        { axis: "Endurance", value: 0 },
+        { axis: "Energie", value: 0 },
+        { axis: "Cardio", value: 0 },
+      ];
+    } else {
+      /*       data.data.forEach((element) => {
         const kind = element.kind
         const value = element.value
 
         console.log("Kind:" + kind);
         console.log("Nom Kind :" + kindList[kind - 1]);
         arrayData[kind - 1] = {axis : kindList[kind - 1], value: value}
-      })
+      }) */
+
+      const dataList = data.data;
+
+      for (let i = dataList.length - 1; i >= 0; i--) {
+        const element = {
+          axis: kindList[dataList[i].kind - 1],
+          value: dataList[i].value,
+        };
+        arrayData.push(element);
+      }
     }
 
-    const width = 258;  // Increased width
+    const width = 258; // Increased width
     const height = 263; // Increased height
-    const margin = 50;  // Margin to prevent cutoff
+    const margin = 50; // Margin to prevent cutoff
     const radius = Math.min(width / 2, height / 2) - margin;
-    const svg = d3.select(svgRef.current)
-      .attr('width', width)
-      .attr('height', height)
-      .append('g')
-      .attr('transform', `translate(${width / 2}, ${height / 2})`);
+    const svg = d3
+      .select(svgRef.current)
+      .attr("width", width)
+      .attr("height", height)
+      .append("g")
+      .attr("transform", `translate(${width / 2}, ${height / 2})`);
 
     const angleSlice = (Math.PI * 2) / arrayData.length;
 
     // Draw axis lines and labels
-    svg.selectAll('.axis')
+    svg
+      .selectAll(".axis")
       .data(arrayData)
       .enter()
-      .append('g')
-      .attr('class', 'axis')
-      .each(function (d, i) {/* 
+      .append("g")
+      .attr("class", "axis")
+      .each(function (d, i) {
+        /* 
         // Draw the axis line
         d3.select(this)
           .append('line')
@@ -64,26 +86,25 @@ const RadarChart = ({ data, levels, maxValue }) => {
           .attr('y2', radius * Math.sin(angleSlice * i - Math.PI / 2))
           .style('stroke', 'grey')
           .style('stroke-width', '2px'); */
-
         // Add the axis label
         d3.select(this)
-          .append('text')
-          .attr('x', radius * 1.1 * Math.cos(angleSlice * i - Math.PI / 2))
-          .attr('y', radius * 1.1 * Math.sin(angleSlice * i - Math.PI / 2))
-          .attr('dy', '0.35em')
+          .append("text")
+          .attr("x", radius * 1.1 * Math.cos(angleSlice * i - Math.PI / 2))
+          .attr("y", radius * 1.1 * Math.sin(angleSlice * i - Math.PI / 2))
+          .attr("dy", "0.35em")
           .attr("fill", "white")
-          .style('font-size', '12px')
-/*           .style('text-anchor', i === 0 || i === data.length / 2 ? 'middle' : 'middle') */
-        .style('text-anchor', () => {
-          if(i===0 || i === arrayData.length/2){
-            return "middle";
-          }else if(i > arrayData.length/2){
-            return "end";
-          }else{
-            return "start";
-          }
-        })
-          .text(d => d.axis);
+          .style("font-size", "12px")
+          /*           .style('text-anchor', i === 0 || i === data.length / 2 ? 'middle' : 'middle') */
+          .style("text-anchor", () => {
+            if (i === 0 || i === arrayData.length / 2) {
+              return "middle";
+            } else if (i > arrayData.length / 2) {
+              return "end";
+            } else {
+              return "start";
+            }
+          })
+          .text((d) => d.axis);
       });
 
     // Draw background hexagons
@@ -96,33 +117,34 @@ const RadarChart = ({ data, levels, maxValue }) => {
           levelFactor * Math.sin(angleSlice * i - Math.PI / 2),
         ]);
       }
-      svg.append('polygon')
-        .attr('class', 'grid-polygon')
-        .attr('points', points.map(d => d.join(',')).join(' '))
-        .style('fill', '#282D30')
-        .style('stroke', '#CDCDCD')
-        .style("stroke-width","1px")
-        .style('fill-opacity', 0.1);
+      svg
+        .append("polygon")
+        .attr("class", "grid-polygon")
+        .attr("points", points.map((d) => d.join(",")).join(" "))
+        .style("fill", "#282D30")
+        .style("stroke", "#CDCDCD")
+        .style("stroke-width", "1px")
+        .style("fill-opacity", 0.1);
     }
 
     // Draw the radar chart
-    const radarLine = d3.lineRadial()
-      .radius(d => radius * (d.value / maxValue))
+    const radarLine = d3
+      .lineRadial()
+      .radius((d) => radius * (d.value / maxValue))
       .curve(d3.curveLinearClosed)
       .angle((d, i) => i * angleSlice);
 
-    svg.append('path')
+    svg
+      .append("path")
       .datum(arrayData)
-      .attr('d', radarLine)
-      .style('stroke-width', '0px')
-      .style('stroke', '#FF0101B2')
-      .style('fill', '#FF0101B2')
-      .style('fill-opacity', 0.7);
+      .attr("d", radarLine)
+      .style("stroke-width", "0px")
+      .style("stroke", "#FF0101B2")
+      .style("fill", "#FF0101B2")
+      .style("fill-opacity", 0.7);
   };
 
-  return (
-    <svg className="svg_radar" ref={svgRef}></svg>
-  );
+  return <svg className="svg_radar" ref={svgRef}></svg>;
 };
 
 export default RadarChart;
