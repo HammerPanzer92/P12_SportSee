@@ -127,3 +127,14 @@ body {
     font-size: 18px;
     line-height: 24px;
 }
+
+@media (max-width: 1024px) { 
+    .main_stats_container{
+        flex-wrap: wrap;
+
+        .stats_container{
+            margin-top: 15px;
+            width: 100%;
+        }
+    }
+ }
